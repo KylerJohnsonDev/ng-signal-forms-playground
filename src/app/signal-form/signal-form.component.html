@@ -1,0 +1,90 @@
+<div class="container">
+    <h2>Signal Form Sign Up</h2>
+
+    <div class="stepper">
+        <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">1. Personal Info</div>
+        <div class="line"></div>
+        <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">2. Details</div>
+        <div class="line"></div>
+        <div class="step" [class.active]="currentStep === 3">3. Preferences</div>
+    </div>
+
+    <form (submit)="$event.preventDefault(); onSubmit()">
+
+        <!-- Step 1: Personal Info -->
+        <div *ngIf="currentStep === 1" class="form-step">
+            <h3>Step 1: Personal Information</h3>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <!-- Bind directly to the field -->
+                <input id="name" type="text" [field]="signUpForm.name" placeholder="Enter your name">
+
+                <!-- Show errors -->
+                @if (signUpForm.name().invalid()) {
+                <div class="error">
+                    @for (error of signUpForm.name().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Step 2: Details -->
+        <div *ngIf="currentStep === 2" class="form-step">
+            <h3>Step 2: Shipping & Referral</h3>
+            <div class="form-group">
+                <label for="address">Shipping Address</label>
+                <input id="address" type="text" [field]="signUpForm.shippingAddress" placeholder="Enter your address">
+                @if (signUpForm.shippingAddress().invalid()) {
+                <div class="error">
+                    @for (error of signUpForm.shippingAddress().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label>How did you hear about us?</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" [field]="signUpForm.referralSource" value="social"> Social Media
+                    </label>
+                    <label>
+                        <input type="radio" [field]="signUpForm.referralSource" value="friend"> Friend
+                    </label>
+                    <label>
+                        <input type="radio" [field]="signUpForm.referralSource" value="search"> Search Engine
+                    </label>
+                </div>
+                @if (signUpForm.referralSource().invalid()) {
+                <div class="error">
+                    @for (error of signUpForm.referralSource().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- Step 3: Preferences -->
+        <div *ngIf="currentStep === 3" class="form-step">
+            <h3>Step 3: Preferences</h3>
+            <div class="form-group checkbox-group">
+                <label>
+                    <input type="checkbox" [field]="signUpForm.newsletter"> Subscribe to Newsletter
+                </label>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="actions">
+            <button type="button" (click)="prevStep()" [disabled]="currentStep === 1"
+                class="btn-secondary">Previous</button>
+            <button type="button" (click)="nextStep()" *ngIf="currentStep < 3" class="btn-primary">Next</button>
+            <button type="submit" *ngIf="currentStep === 3" class="btn-success">Submit</button>
+        </div>
+
+    </form>
+</div>
