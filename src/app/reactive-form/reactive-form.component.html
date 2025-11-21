@@ -1,6 +1,6 @@
 <div class="container">
   <h2>Reactive Form Sign Up</h2>
-  
+
   <div class="stepper">
     <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">1. Personal Info</div>
     <div class="line"></div>
@@ -9,57 +9,97 @@
     <div class="step" [class.active]="currentStep === 3">3. Preferences</div>
   </div>
 
-  <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
-    
+  <form [formGroup]="intakeForm" (ngSubmit)="onSubmit()">
+
     <!-- Step 1: Personal Info -->
     <div *ngIf="currentStep === 1" class="form-step">
       <h3>Step 1: Personal Information</h3>
+
       <div class="form-group">
-        <label for="name">Full Name</label>
-        <input id="name" type="text" formControlName="name" placeholder="Enter your name">
-        <div *ngIf="signUpForm.get('name')?.invalid && signUpForm.get('name')?.touched" class="error">
-          Name is required.
+        <label for="fullName">Full Name</label>
+        <input id="fullName" type="text" formControlName="fullName" placeholder="Enter full name">
+        <div *ngIf="intakeForm.get('fullName')?.invalid && intakeForm.get('fullName')?.touched" class="error">
+          Full Name is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input id="dateOfBirth" type="date" formControlName="dateOfBirth">
+        <div *ngIf="intakeForm.get('dateOfBirth')?.invalid && intakeForm.get('dateOfBirth')?.touched" class="error">
+          Date of Birth is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="gender">Gender</label>
+        <select id="gender" formControlName="gender">
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number</label>
+        <input id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="Enter phone number">
+        <div *ngIf="intakeForm.get('phoneNumber')?.invalid && intakeForm.get('phoneNumber')?.touched" class="error">
+          <span *ngIf="intakeForm.get('phoneNumber')?.errors?.['required']">Phone Number is required.</span>
+          <span *ngIf="intakeForm.get('phoneNumber')?.errors?.['pattern']">Invalid phone number format
+            (xxx-xxx-xxxx).</span>
         </div>
       </div>
     </div>
 
-    <!-- Step 2: Details -->
+    <!-- Step 2: Medical Info -->
     <div *ngIf="currentStep === 2" class="form-step">
-      <h3>Step 2: Shipping & Referral</h3>
+      <h3>Step 2: Medical Information</h3>
+
       <div class="form-group">
-        <label for="address">Shipping Address</label>
-        <input id="address" type="text" formControlName="shippingAddress" placeholder="Enter your address">
-        <div *ngIf="signUpForm.get('shippingAddress')?.invalid && signUpForm.get('shippingAddress')?.touched" class="error">
-          Shipping address is required.
+        <label for="primaryComplaint">Primary Complaint</label>
+        <textarea id="primaryComplaint" formControlName="primaryComplaint"
+          placeholder="Describe your primary complaint"></textarea>
+        <div *ngIf="intakeForm.get('primaryComplaint')?.invalid && intakeForm.get('primaryComplaint')?.touched"
+          class="error">
+          Primary Complaint is required.
         </div>
       </div>
 
       <div class="form-group">
-        <label>How did you hear about us?</label>
-        <div class="radio-group">
-          <label>
-            <input type="radio" formControlName="referralSource" value="social"> Social Media
-          </label>
-          <label>
-            <input type="radio" formControlName="referralSource" value="friend"> Friend
-          </label>
-          <label>
-            <input type="radio" formControlName="referralSource" value="search"> Search Engine
-          </label>
-        </div>
-        <div *ngIf="signUpForm.get('referralSource')?.invalid && signUpForm.get('referralSource')?.touched" class="error">
-          Please select an option.
-        </div>
+        <label for="allergies">Allergies</label>
+        <textarea id="allergies" formControlName="allergies" placeholder="List any allergies"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="medications">Current Medications</label>
+        <textarea id="medications" formControlName="medications" placeholder="List current medications"></textarea>
       </div>
     </div>
 
-    <!-- Step 3: Preferences -->
+    <!-- Step 3: Insurance & Consent -->
     <div *ngIf="currentStep === 3" class="form-step">
-      <h3>Step 3: Preferences</h3>
+      <h3>Step 3: Insurance & Consent</h3>
+
+      <div class="form-group">
+        <label for="insuranceProvider">Insurance Provider</label>
+        <input id="insuranceProvider" type="text" formControlName="insuranceProvider"
+          placeholder="Enter insurance provider">
+      </div>
+
+      <div class="form-group">
+        <label for="policyNumber">Policy Number</label>
+        <input id="policyNumber" type="text" formControlName="policyNumber" placeholder="Enter policy number">
+      </div>
+
       <div class="form-group checkbox-group">
         <label>
-          <input type="checkbox" formControlName="newsletter"> Subscribe to Newsletter
+          <input type="checkbox" formControlName="consentToTreat"> I consent to treatment
         </label>
+        <div *ngIf="intakeForm.get('consentToTreat')?.invalid && intakeForm.get('consentToTreat')?.touched"
+          class="error">
+          Consent is required.
+        </div>
       </div>
     </div>
 

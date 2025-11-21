@@ -84,16 +84,25 @@ label {
     color: #444;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"],
+input[type="tel"],
+select,
+textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
     transition: border-color 0.3s;
+    font-family: inherit;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
     border-color: #9c27b0;
     outline: none;
     box-shadow: 0 0 0 3px rgba(156, 39, 176, 0.1);

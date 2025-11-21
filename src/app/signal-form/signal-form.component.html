@@ -1,28 +1,62 @@
 <div class="container">
-    <h2>Signal Form Sign Up</h2>
+    <h2>Patient Intake Form</h2>
 
     <div class="stepper">
-        <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">1. Personal Info</div>
+        <div class="step" [class.active]="currentStep === 1" [class.completed]="currentStep > 1">1. Patient Info</div>
         <div class="line"></div>
-        <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">2. Details</div>
+        <div class="step" [class.active]="currentStep === 2" [class.completed]="currentStep > 2">2. Medical History
+        </div>
         <div class="line"></div>
-        <div class="step" [class.active]="currentStep === 3">3. Preferences</div>
+        <div class="step" [class.active]="currentStep === 3">3. Insurance & Consent</div>
     </div>
 
     <form (submit)="$event.preventDefault(); onSubmit()">
 
-        <!-- Step 1: Personal Info -->
+        <!-- Step 1: Patient Info -->
         <div *ngIf="currentStep === 1" class="form-step">
-            <h3>Step 1: Personal Information</h3>
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <!-- Bind directly to the field -->
-                <input id="name" type="text" [field]="signUpForm.name" placeholder="Enter your name">
+            <h3>Step 1: Patient Information</h3>
 
-                <!-- Show errors -->
-                @if (signUpForm.name().invalid()) {
+            <div class="form-group">
+                <label for="fullName">Full Name *</label>
+                <input id="fullName" type="text" [field]="intakeForm.fullName" placeholder="Enter full name">
+                @if (intakeForm.fullName().invalid()) {
                 <div class="error">
-                    @for (error of signUpForm.name().errors(); track error) {
+                    @for (error of intakeForm.fullName().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="dob">Date of Birth *</label>
+                <input id="dob" type="date" [field]="intakeForm.dateOfBirth">
+                @if (intakeForm.dateOfBirth().invalid()) {
+                <div class="error">
+                    @for (error of intakeForm.dateOfBirth().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" [field]="intakeForm.gender">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                    <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number *</label>
+                <input id="phone" type="tel" [field]="intakeForm.phoneNumber" placeholder="(555) 555-5555">
+                @if (intakeForm.phoneNumber().invalid()) {
+                <div class="error">
+                    @for (error of intakeForm.phoneNumber().errors(); track error) {
                     {{ error.message }}
                     }
                 </div>
@@ -30,15 +64,17 @@
             </div>
         </div>
 
-        <!-- Step 2: Details -->
+        <!-- Step 2: Medical History -->
         <div *ngIf="currentStep === 2" class="form-step">
-            <h3>Step 2: Shipping & Referral</h3>
+            <h3>Step 2: Medical History</h3>
+
             <div class="form-group">
-                <label for="address">Shipping Address</label>
-                <input id="address" type="text" [field]="signUpForm.shippingAddress" placeholder="Enter your address">
-                @if (signUpForm.shippingAddress().invalid()) {
+                <label for="complaint">Primary Complaint *</label>
+                <textarea id="complaint" [field]="intakeForm.primaryComplaint" rows="3"
+                    placeholder="Describe your main reason for visiting"></textarea>
+                @if (intakeForm.primaryComplaint().invalid()) {
                 <div class="error">
-                    @for (error of signUpForm.shippingAddress().errors(); track error) {
+                    @for (error of intakeForm.primaryComplaint().errors(); track error) {
                     {{ error.message }}
                     }
                 </div>
@@ -46,35 +82,44 @@
             </div>
 
             <div class="form-group">
-                <label>How did you hear about us?</label>
-                <div class="radio-group">
-                    <label>
-                        <input type="radio" [field]="signUpForm.referralSource" value="social"> Social Media
-                    </label>
-                    <label>
-                        <input type="radio" [field]="signUpForm.referralSource" value="friend"> Friend
-                    </label>
-                    <label>
-                        <input type="radio" [field]="signUpForm.referralSource" value="search"> Search Engine
-                    </label>
-                </div>
-                @if (signUpForm.referralSource().invalid()) {
-                <div class="error">
-                    @for (error of signUpForm.referralSource().errors(); track error) {
-                    {{ error.message }}
-                    }
-                </div>
-                }
+                <label for="allergies">Allergies</label>
+                <textarea id="allergies" [field]="intakeForm.allergies" rows="2"
+                    placeholder="List any allergies"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="medications">Current Medications</label>
+                <textarea id="medications" [field]="intakeForm.medications" rows="2"
+                    placeholder="List current medications"></textarea>
             </div>
         </div>
 
-        <!-- Step 3: Preferences -->
+        <!-- Step 3: Insurance & Consent -->
         <div *ngIf="currentStep === 3" class="form-step">
-            <h3>Step 3: Preferences</h3>
+            <h3>Step 3: Insurance & Consent</h3>
+
+            <div class="form-group">
+                <label for="insurance">Insurance Provider</label>
+                <input id="insurance" type="text" [field]="intakeForm.insuranceProvider" placeholder="Provider Name">
+            </div>
+
+            <div class="form-group">
+                <label for="policy">Policy Number</label>
+                <input id="policy" type="text" [field]="intakeForm.policyNumber" placeholder="Policy #">
+            </div>
+
             <div class="form-group checkbox-group">
                 <label>
-                    <input type="checkbox" [field]="signUpForm.newsletter"> Subscribe to Newsletter
+                    <input type="checkbox" [field]="intakeForm.consentToTreat"> I consent to treatment and agree to the
+                    clinic's policies. *
                 </label>
+                @if (intakeForm.consentToTreat().invalid()) {
+                <div class="error">
+                    @for (error of intakeForm.consentToTreat().errors(); track error) {
+                    {{ error.message }}
+                    }
+                </div>
+                }
             </div>
         </div>
 
@@ -83,7 +128,8 @@
             <button type="button" (click)="prevStep()" [disabled]="currentStep === 1"
                 class="btn-secondary">Previous</button>
             <button type="button" (click)="nextStep()" *ngIf="currentStep < 3" class="btn-primary">Next</button>
-            <button type="submit" *ngIf="currentStep === 3" class="btn-success">Submit</button>
+            <button type="submit" *ngIf="currentStep === 3" class="btn-success"
+                [disabled]="intakeForm.consentToTreat().invalid()">Submit</button>
         </div>
 
     </form>

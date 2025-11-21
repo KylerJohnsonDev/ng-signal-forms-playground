@@ -9,20 +9,26 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
   styleUrls: ['./reactive-form.component.css']
 })
 export class ReactiveFormComponent {
-  signUpForm: FormGroup;
+  intakeForm: FormGroup;
   currentStep = 1;
 
   constructor(private fb: FormBuilder) {
-    this.signUpForm = this.fb.group({
+    this.intakeForm = this.fb.group({
       // Step 1
-      name: ['', Validators.required],
+      fullName: ['', Validators.required],
+      dateOfBirth: ['', Validators.required],
+      gender: [''],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{3}-\d{3}-\d{4}$/)]],
 
       // Step 2
-      shippingAddress: ['', Validators.required],
-      referralSource: ['', Validators.required],
+      allergies: [''],
+      medications: [''],
+      primaryComplaint: ['', Validators.required],
 
       // Step 3
-      newsletter: [false]
+      insuranceProvider: [''],
+      policyNumber: [''],
+      consentToTreat: [false, Validators.requiredTrue]
     });
   }
 
@@ -31,7 +37,7 @@ export class ReactiveFormComponent {
       if (this.validateCurrentStep()) {
         this.currentStep++;
       } else {
-        this.signUpForm.markAllAsTouched();
+        this.markStepAsTouched();
       }
     }
   }
@@ -44,21 +50,33 @@ export class ReactiveFormComponent {
 
   validateCurrentStep(): boolean {
     if (this.currentStep === 1) {
-      return this.signUpForm.get('name')?.valid ?? false;
+      const nameValid = this.intakeForm.get('fullName')?.valid ?? false;
+      const dobValid = this.intakeForm.get('dateOfBirth')?.valid ?? false;
+      const phoneValid = this.intakeForm.get('phoneNumber')?.valid ?? false;
+      return nameValid && dobValid && phoneValid;
     } else if (this.currentStep === 2) {
-      const addressValid = this.signUpForm.get('shippingAddress')?.valid ?? false;
-      const referralValid = this.signUpForm.get('referralSource')?.valid ?? false;
-      return addressValid && referralValid;
+      return this.intakeForm.get('primaryComplaint')?.valid ?? false;
     }
     return true;
   }
 
+  markStepAsTouched() {
+    if (this.currentStep === 1) {
+      this.intakeForm.get('fullName')?.markAsTouched();
+      this.intakeForm.get('dateOfBirth')?.markAsTouched();
+      this.intakeForm.get('phoneNumber')?.markAsTouched();
+    } else if (this.currentStep === 2) {
+      this.intakeForm.get('primaryComplaint')?.markAsTouched();
+    }
+  }
+
   onSubmit() {
-    if (this.signUpForm.valid) {
-      console.log('Reactive Form Submitted:', this.signUpForm.value);
+    if (this.intakeForm.valid) {
+      console.log('Reactive Form Submitted:', this.intakeForm.value);
       alert('Form Submitted! Check console for values.');
     } else {
-      this.signUpForm.markAllAsTouched();
+      this.intakeForm.markAllAsTouched();
+      console.log('Form Invalid');
     }
   }
 }

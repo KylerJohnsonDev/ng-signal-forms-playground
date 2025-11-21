@@ -1,12 +1,20 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { form, schema, required, Field } from '@angular/forms/signals';
+import { form, schema, required, pattern, Field } from '@angular/forms/signals';
 
-interface User {
-    name: string;
-    shippingAddress: string;
-    referralSource: string;
-    newsletter: boolean;
+export type PhoneNumber = string;
+
+export interface PatientIntake {
+    fullName: string;
+    dateOfBirth: string;
+    gender: string;
+    phoneNumber: PhoneNumber;
+    allergies: string;
+    medications: string;
+    primaryComplaint: string;
+    insuranceProvider: string;
+    policyNumber: string;
+    consentToTreat: boolean;
 }
 
 @Component({
@@ -17,22 +25,31 @@ interface User {
 })
 export class SignalFormComponent {
     // 1. Define the model signal
-    user = signal<User>({
-        name: '',
-        shippingAddress: '',
-        referralSource: '',
-        newsletter: false
+    patient = signal<PatientIntake>({
+        fullName: '',
+        dateOfBirth: '',
+        gender: '',
+        phoneNumber: '',
+        allergies: '',
+        medications: '',
+        primaryComplaint: '',
+        insuranceProvider: '',
+        policyNumber: '',
+        consentToTreat: false
     });
 
     // 2. Define Validation Schema
-    userSchema = schema((user: any) => {
-        required(user.name);
-        required(user.shippingAddress);
-        required(user.referralSource);
+    patientSchema = schema((patient: any) => {
+        required(patient.fullName);
+        required(patient.dateOfBirth);
+        required(patient.phoneNumber);
+        pattern(patient.phoneNumber, /^\d{3}-\d{3}-\d{4}$/, { message: 'Invalid phone number format (xxx-xxx-xxxx)' });
+        required(patient.primaryComplaint);
+        required(patient.consentToTreat);
     });
 
     // 3. Create the form
-    signUpForm = form(this.user, this.userSchema);
+    intakeForm = form(this.patient, this.patientSchema);
 
     currentStep = 1;
 
@@ -55,20 +72,23 @@ export class SignalFormComponent {
 
     validateCurrentStep(): boolean {
         if (this.currentStep === 1) {
-            return !this.signUpForm.name().invalid();
+            return !this.intakeForm.fullName().invalid() &&
+                !this.intakeForm.dateOfBirth().invalid() &&
+                !this.intakeForm.phoneNumber().invalid();
         } else if (this.currentStep === 2) {
-            return !this.signUpForm.shippingAddress().invalid() && !this.signUpForm.referralSource().invalid();
+            return !this.intakeForm.primaryComplaint().invalid();
         }
         return true;
     }
 
     markStepAsTouched() {
         // Implementation for marking touched if needed
+        // In a real app, we might iterate over fields in the current step and mark them touched
     }
 
     onSubmit() {
-        if (!this.signUpForm().invalid()) {
-            console.log('Signal Form Submitted:', this.user());
+        if (!this.intakeForm().invalid()) {
+            console.log('Patient Intake Form Submitted:', this.patient());
             alert('Form Submitted! Check console for values.');
         } else {
             console.log('Form Invalid');
