@@ -128,6 +128,12 @@ textarea:focus {
     margin-top: 0.25rem;
 }
 
+.age-display {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+
 /* Buttons */
 .actions {
     display: flex;

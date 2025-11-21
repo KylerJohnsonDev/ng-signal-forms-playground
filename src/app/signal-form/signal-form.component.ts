@@ -69,6 +69,36 @@ export class SignalFormComponent {
         return option ? option.label : 'Select Gender';
     });
 
+    calculatedAge = computed(() => {
+        const dob = this.patient().dateOfBirth;
+        if (!dob) {
+            return '';
+        }
+        const birthDate = new Date(dob);
+        const today = new Date();
+
+        // If birth year is the same as current year, show age in months
+        if (birthDate.getFullYear() === today.getFullYear()) {
+            let months = today.getMonth() - birthDate.getMonth();
+            if (today.getDate() < birthDate.getDate()) {
+                months--;
+            }
+            // Ensure months is not negative
+            months = Math.max(0, months);
+            return `${months} ${months === 1 ? 'month' : 'months'}`;
+        }
+
+        // Otherwise, show age in years
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        return age.toString();
+    });
+
     setGender(value: string) {
         this.patient.update(p => ({ ...p, gender: value }));
     }
