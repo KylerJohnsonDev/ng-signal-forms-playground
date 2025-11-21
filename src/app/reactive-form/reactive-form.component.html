@@ -142,7 +142,7 @@
     <!-- Navigation Buttons -->
     <div class="actions">
       <button type="button" (click)="prevStep()" [disabled]="currentStep === 1" class="btn-secondary">Previous</button>
-      @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary">Next</button>
+      @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary" [disabled]="!validateCurrentStep()">Next</button>
         }
         @if (currentStep === 3) {
         <button type="submit" class="btn-success">Submit</button>

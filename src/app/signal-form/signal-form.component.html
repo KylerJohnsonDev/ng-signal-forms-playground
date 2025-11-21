@@ -19,7 +19,7 @@
             <div class="form-group">
                 <label for="fullName">Full Name *</label>
                 <input id="fullName" type="text" [field]="intakeForm.fullName" placeholder="Enter full name">
-                @if (intakeForm.fullName().invalid() && intakeForm.fullName().dirty()) {
+                @if (intakeForm.fullName().invalid() && (intakeForm.fullName().dirty() || intakeForm.fullName().touched())) {
                 <div class="error">
                     @for (error of intakeForm.fullName().errors(); track error) {
                     @if (error.kind === 'required') {
@@ -35,7 +35,7 @@
             <div class="form-group">
                 <label for="dob">Date of Birth *</label>
                 <input id="dob" type="date" [field]="intakeForm.dateOfBirth">
-                @if (intakeForm.dateOfBirth().invalid()) {
+                @if (intakeForm.dateOfBirth().invalid() && (intakeForm.dateOfBirth().dirty() || intakeForm.dateOfBirth().touched())) {
                 <div class="error">
                     @for (error of intakeForm.dateOfBirth().errors(); track error) {
                     {{ error.message }}
@@ -77,7 +77,7 @@
             <div class="form-group">
                 <label for="phone">Phone Number *</label>
                 <input id="phone" type="tel" [field]="intakeForm.phoneNumber" placeholder="(555) 555-5555">
-                @if (intakeForm.phoneNumber().invalid()) {
+                @if (intakeForm.phoneNumber().invalid() && (intakeForm.phoneNumber().dirty() || intakeForm.phoneNumber().touched())) {
                 <div class="error">
                     @for (error of intakeForm.phoneNumber().errors(); track error) {
                     {{ error.message }}
@@ -96,7 +96,7 @@
                 <label for="complaint">Primary Complaint *</label>
                 <textarea id="complaint" [field]="intakeForm.primaryComplaint" rows="3"
                     placeholder="Describe your main reason for visiting"></textarea>
-                @if (intakeForm.primaryComplaint().invalid()) {
+                @if (intakeForm.primaryComplaint().invalid() && (intakeForm.primaryComplaint().dirty() || intakeForm.primaryComplaint().touched())) {
                 <div class="error">
                     @for (error of intakeForm.primaryComplaint().errors(); track error) {
                     {{ error.message }}
@@ -149,7 +149,7 @@
         <div class="actions">
             <button type="button" (click)="prevStep()" [disabled]="currentStep === 1"
                 class="btn-secondary">Previous</button>
-            @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary">Next</button>
+            @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary" [disabled]="!validateCurrentStep()">Next</button>
                 }
                 @if (currentStep === 3) {
                 <button type="submit" class="btn-success"
