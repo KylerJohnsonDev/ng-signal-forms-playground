@@ -1,12 +1,17 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer } from '@angular/aria/combobox';
+import { Listbox, Option } from '@angular/aria/listbox';
+import { OverlayModule } from '@angular/cdk/overlay';
+
 @Component({
   selector: 'app-reactive-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer, Listbox, Option, OverlayModule],
   templateUrl: './reactive-form.component.html',
-  styleUrls: ['./reactive-form.component.css']
+  styleUrls: ['./reactive-form.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReactiveFormComponent {
   intakeForm: FormGroup;
@@ -30,6 +35,23 @@ export class ReactiveFormComponent {
       policyNumber: [''],
       consentToTreat: [false, Validators.requiredTrue]
     });
+  }
+
+  genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' },
+    { value: 'prefer-not-to-say', label: 'Prefer not to say' }
+  ];
+
+  get genderDisplayValue(): string {
+    const value = this.intakeForm.get('gender')?.value;
+    const option = this.genderOptions.find(o => o.value === value);
+    return option ? option.label : 'Select Gender';
+  }
+
+  setGender(value: string) {
+    this.intakeForm.patchValue({ gender: value });
   }
 
   nextStep() {

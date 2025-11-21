@@ -41,14 +41,32 @@
             </div>
 
             <div class="form-group">
-                <label for="gender">Gender</label>
-                <select id="gender" [field]="intakeForm.gender">
-                    <option value="">Select Gender</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="prefer-not-to-say">Prefer not to say</option>
-                </select>
+                <label id="gender-label">Gender</label>
+                <div ngCombobox #combobox="ngCombobox" readonly>
+                    <div #origin class="select" [class.invalid]="intakeForm.gender().invalid()">
+                        <span class="combobox-label">
+                            <span class="selected-label-text">{{ genderDisplayValue() }}</span>
+                        </span>
+                        <input aria-labelledby="gender-label" ngComboboxInput />
+                        <span class="arrow">▼</span>
+                    </div>
+                    <ng-template ngComboboxPopupContainer>
+                        <ng-template [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+                            [cdkConnectedOverlayOpen]="true">
+                            <div class="popup-container">
+                                <div ngListbox>
+                                    @for (option of genderOptions; track option.value) {
+                                    <div ngOption [value]="option.value" [label]="option.label"
+                                        (click)="setGender(option.value)">
+                                        <span class="option-text">{{option.label}}</span>
+                                        <span class="check">✓</span>
+                                    </div>
+                                    }
+                                </div>
+                            </div>
+                        </ng-template>
+                    </ng-template>
+                </div>
             </div>
 
             <div class="form-group">

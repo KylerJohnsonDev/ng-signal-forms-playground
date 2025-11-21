@@ -61,8 +61,15 @@ h3 {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .form-group {
@@ -76,7 +83,10 @@ label {
   color: #444;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"],
+input[type="tel"],
+textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
@@ -85,7 +95,10 @@ input[type="text"] {
   transition: border-color 0.3s;
 }
 
-input[type="text"]:focus {
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="tel"]:focus,
+textarea:focus {
   border-color: #007bff;
   outline: none;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
@@ -162,4 +175,101 @@ button:disabled {
 
 .btn-success:hover {
   background: #218838;
+}
+
+/* ARIA Select */
+.select {
+  display: flex;
+  position: relative;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.select:hover {
+  border-color: #bbb;
+}
+
+.select.invalid {
+  border-color: #dc3545;
+}
+
+[ngComboboxInput] {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.combobox-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.arrow {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.popup-container {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 4px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+[ngOption] {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+[ngOption]:hover {
+  background-color: #f5f5f5;
+}
+
+[ngOption][aria-selected="true"] {
+  background-color: #e6f2ff;
+  color: #007bff;
+}
+
+.option-text {
+  flex: 1;
+}
+
+.check {
+  display: none;
+  color: #007bff;
+}
+
+[ngOption][aria-selected="true"] .check {
+  display: block;
+}
+
+[ngCombobox]:has([ngComboboxInput][aria-expanded='false']) .popup-container {
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: max-height 150ms ease-in, visibility 0s 150ms, opacity 150ms ease-in;
 }

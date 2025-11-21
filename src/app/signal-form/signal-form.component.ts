@@ -1,6 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { form, schema, required, pattern, Field } from '@angular/forms/signals';
+import { Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer } from '@angular/aria/combobox';
+import { Listbox, Option } from '@angular/aria/listbox';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 export type PhoneNumber = string;
 
@@ -19,9 +22,10 @@ export interface PatientIntake {
 
 @Component({
     selector: 'app-signal-form',
-    imports: [CommonModule, Field],
+    imports: [CommonModule, Field, Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer, Listbox, Option, OverlayModule],
     templateUrl: './signal-form.component.html',
-    styleUrls: ['./signal-form.component.css']
+    styleUrls: ['./signal-form.component.css'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalFormComponent {
     // 1. Define the model signal
@@ -51,15 +55,29 @@ export class SignalFormComponent {
     // 3. Create the form
     intakeForm = form(this.patient, this.patientSchema);
 
+    genderOptions = [
+        { value: 'male', label: 'Male' },
+        { value: 'female', label: 'Female' },
+        { value: 'other', label: 'Other' },
+        { value: 'prefer-not-to-say', label: 'Prefer not to say' }
+    ];
+
+    genderDisplayValue = computed(() => {
+        const value = this.patient().gender;
+        const option = this.genderOptions.find(o => o.value === value);
+        return option ? option.label : 'Select Gender';
+    });
+
+    setGender(value: string) {
+        this.patient.update(p => ({ ...p, gender: value }));
+    }
+
     currentStep = 1;
 
     nextStep() {
         if (this.currentStep < 3) {
             if (this.validateCurrentStep()) {
                 this.currentStep++;
-            } else {
-                // Mark fields as touched to show errors
-                this.markStepAsTouched();
             }
         }
     }
@@ -79,11 +97,6 @@ export class SignalFormComponent {
             return !this.intakeForm.primaryComplaint().invalid();
         }
         return true;
-    }
-
-    markStepAsTouched() {
-        // Implementation for marking touched if needed
-        // In a real app, we might iterate over fields in the current step and mark them touched
     }
 
     onSubmit() {
