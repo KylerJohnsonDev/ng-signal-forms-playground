@@ -18,28 +18,17 @@
             <div class="form-group">
                 <label for="fullName">Full Name *</label>
                 <input id="fullName" type="text" [field]="intakeForm.fullName" placeholder="Enter full name">
-                @if (intakeForm.fullName().invalid() && (intakeForm.fullName().dirty() || intakeForm.fullName().touched())) {
-                <div class="error">
-                    @for (error of intakeForm.fullName().errors(); track error) {
-                    @if (error.kind === 'required') {
-                    <span>Full Name is required.</span>
-                    }
-                    @if (error.kind === 'minLength') {
-                    <span>Full Name must be at least 3 characters.</span>
-                    }
-                    }
-                </div>
+                @if (intakeForm.fullName().invalid() && (intakeForm.fullName().dirty() ||
+                intakeForm.fullName().touched())) {
+                <app-validation-errors [errors]="intakeForm.fullName().errors()" />
                 }
             </div>
             <div class="form-group">
                 <label for="dob">Date of Birth *</label>
                 <input id="dob" type="date" [field]="intakeForm.dateOfBirth">
-                @if (intakeForm.dateOfBirth().invalid() && (intakeForm.dateOfBirth().dirty() || intakeForm.dateOfBirth().touched())) {
-                <div class="error">
-                    @for (error of intakeForm.dateOfBirth().errors(); track error) {
-                    {{ error.message }}
-                    }
-                </div>
+                @if (intakeForm.dateOfBirth().invalid() && (intakeForm.dateOfBirth().dirty() ||
+                intakeForm.dateOfBirth().touched())) {
+                <app-validation-errors [errors]="intakeForm.dateOfBirth().errors()" />
                 }
                 <div class="age-display">
                     <strong>Age:</strong> {{ calculatedAge() }}
@@ -75,13 +64,10 @@
             </div>
             <div class="form-group">
                 <label for="phone">Phone Number *</label>
-                <input id="phone" type="tel" [field]="intakeForm.phoneNumber" placeholder="(555) 555-5555">
-                @if (intakeForm.phoneNumber().invalid() && (intakeForm.phoneNumber().dirty() || intakeForm.phoneNumber().touched())) {
-                <div class="error">
-                    @for (error of intakeForm.phoneNumber().errors(); track error) {
-                    {{ error.message }}
-                    }
-                </div>
+                <input id="phone" type="tel" [field]="intakeForm.phoneNumber" placeholder="555-555-5555">
+                @if (intakeForm.phoneNumber().invalid() && (intakeForm.phoneNumber().dirty() ||
+                intakeForm.phoneNumber().touched())) {
+                <app-validation-errors [errors]="intakeForm.phoneNumber().errors()" />
                 }
             </div>
         </div>
@@ -94,12 +80,9 @@
                 <label for="complaint">Primary Complaint *</label>
                 <textarea id="complaint" [field]="intakeForm.primaryComplaint" rows="3"
                     placeholder="Describe your main reason for visiting"></textarea>
-                @if (intakeForm.primaryComplaint().invalid() && (intakeForm.primaryComplaint().dirty() || intakeForm.primaryComplaint().touched())) {
-                <div class="error">
-                    @for (error of intakeForm.primaryComplaint().errors(); track error) {
-                    {{ error.message }}
-                    }
-                </div>
+                @if (intakeForm.primaryComplaint().invalid() && (intakeForm.primaryComplaint().dirty() ||
+                intakeForm.primaryComplaint().touched())) {
+                <app-validation-errors [errors]="intakeForm.primaryComplaint().errors()" />
                 }
             </div>
             <div class="form-group">
@@ -123,8 +106,13 @@
                 <input id="insurance" type="text" [field]="intakeForm.insuranceProvider" placeholder="Provider Name">
             </div>
             <div class="form-group">
-                <label for="policy">Policy Number</label>
+                <label for="policy">Policy Number @if (patient().insuranceProvider) {<span
+                        class="required-indicator">*</span>}</label>
                 <input id="policy" type="text" [field]="intakeForm.policyNumber" placeholder="Policy #">
+                @if (intakeForm.policyNumber().invalid() && (intakeForm.policyNumber().dirty() ||
+                intakeForm.policyNumber().touched())) {
+                <app-validation-errors [errors]="intakeForm.policyNumber().errors()" />
+                }
             </div>
             <div class="form-group checkbox-group">
                 <label>
@@ -132,11 +120,7 @@
                     clinic's policies. *
                 </label>
                 @if (intakeForm.consentToTreat().invalid()) {
-                <div class="error">
-                    @for (error of intakeForm.consentToTreat().errors(); track error) {
-                    {{ error.message }}
-                    }
-                </div>
+                <app-validation-errors [errors]="intakeForm.consentToTreat().errors()" />
                 }
             </div>
         </div>
@@ -146,7 +130,8 @@
         <div class="actions">
             <button type="button" (click)="prevStep()" [disabled]="currentStep === 1"
                 class="btn-secondary">Previous</button>
-            @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary" [disabled]="!validateCurrentStep()">Next</button>
+            @if (currentStep < 3) { <button type="button" (click)="nextStep()" class="btn-primary"
+                [disabled]="!validateCurrentStep()">Next</button>
                 }
                 @if (currentStep === 3) {
                 <button type="submit" class="btn-success"

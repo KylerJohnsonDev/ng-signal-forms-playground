@@ -131,6 +131,12 @@ textarea:focus {
   color: #555;
 }
 
+.required-indicator {
+  color: #dc3545;
+  font-weight: bold;
+  margin-left: 0.25rem;
+}
+
 /* Buttons */
 .actions {
   display: flex;

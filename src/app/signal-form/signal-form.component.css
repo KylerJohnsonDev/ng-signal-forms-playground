@@ -10,7 +10,7 @@
 
 h2 {
     text-align: center;
-  font-size: 1.5rem;
+    font-size: 1.5rem;
     color: #333;
     margin-bottom: 1rem;
 }
@@ -133,6 +133,12 @@ textarea:focus {
     margin-top: 0.5rem;
     font-size: 0.9rem;
     color: #555;
+}
+
+.required-indicator {
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 0.25rem;
 }
 
 /* Buttons */

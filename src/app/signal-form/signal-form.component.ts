@@ -1,9 +1,10 @@
 import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-
-import { form, schema, required, pattern, minLength, Field } from '@angular/forms/signals';
+import { form, Field, submit } from '@angular/forms/signals';
 import { Combobox, ComboboxInput, ComboboxPopupContainer } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { ValidationErrorsComponent } from '../shared/validation-errors/validation-errors.component';
+import { patientIntakeSchema } from './patient-intake.schema';
 
 export type PhoneNumber = string;
 
@@ -22,7 +23,16 @@ export interface PatientIntake {
 
 @Component({
     selector: 'app-signal-form',
-    imports: [Field, Combobox, ComboboxInput, ComboboxPopupContainer, Listbox, Option, OverlayModule],
+    imports: [
+        Field,
+        Combobox,
+        ComboboxInput,
+        ComboboxPopupContainer,
+        Listbox,
+        Option,
+        OverlayModule,
+        ValidationErrorsComponent
+    ],
     templateUrl: './signal-form.component.html',
     styleUrls: ['./signal-form.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
@@ -42,20 +52,10 @@ export class SignalFormComponent {
         consentToTreat: false
     });
 
-    // 2. Define Validation Schema
-    patientSchema = schema((patient: any) => {
-        required(patient.fullName);
-        minLength(patient.fullName, 3);
-        required(patient.dateOfBirth);
-        required(patient.phoneNumber);
-        pattern(patient.phoneNumber, /^\d{3}-\d{3}-\d{4}$/, { message: 'Invalid phone number format (xxx-xxx-xxxx)' });
-        required(patient.primaryComplaint);
-        required(patient.consentToTreat);
-    });
+    // 2. Create the form with the extracted schema
+    intakeForm = form(this.patient, patientIntakeSchema);
 
-    // 3. Create the form
-    intakeForm = form(this.patient, this.patientSchema);
-
+    // Gender dropdown options
     genderOptions = [
         { value: 'male', label: 'Male' },
         { value: 'female', label: 'Female' },
@@ -63,12 +63,14 @@ export class SignalFormComponent {
         { value: 'prefer-not-to-say', label: 'Prefer not to say' }
     ];
 
+    // Computed value for gender display
     genderDisplayValue = computed(() => {
         const value = this.patient().gender;
         const option = this.genderOptions.find(o => o.value === value);
         return option ? option.label : 'Select Gender';
     });
 
+    // Computed age calculation from date of birth
     calculatedAge = computed(() => {
         const dob = this.patient().dateOfBirth;
         if (!dob) {
@@ -78,7 +80,8 @@ export class SignalFormComponent {
         const today = new Date();
 
         // Calculate total months
-        let totalMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
+        let totalMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 +
+            (today.getMonth() - birthDate.getMonth());
 
         // Calculate days difference
         let days = today.getDate() - birthDate.getDate();
@@ -113,12 +116,15 @@ export class SignalFormComponent {
         return age.toString();
     });
 
+    // Update gender value
     setGender(value: string) {
         this.patient.update(p => ({ ...p, gender: value }));
     }
 
+    // Stepper state
     currentStep = 1;
 
+    // Navigate to next step
     nextStep() {
         if (this.currentStep < 3) {
             if (this.validateCurrentStep()) {
@@ -129,12 +135,14 @@ export class SignalFormComponent {
         }
     }
 
+    // Navigate to previous step
     prevStep() {
         if (this.currentStep > 1) {
             this.currentStep--;
         }
     }
 
+    // Validate fields for current step
     validateCurrentStep(): boolean {
         if (this.currentStep === 1) {
             return !this.intakeForm.fullName().invalid() &&
@@ -146,22 +154,25 @@ export class SignalFormComponent {
         return true;
     }
 
+    // Mark step fields as touched to show validation errors
     markStepAsTouched() {
         if (this.currentStep === 1) {
-            this.intakeForm.fullName().touched();
-            this.intakeForm.dateOfBirth().touched();
-            this.intakeForm.phoneNumber().touched();
+            this.intakeForm.fullName().markAsTouched();
+            this.intakeForm.dateOfBirth().markAsTouched();
+            this.intakeForm.phoneNumber().markAsTouched();
         } else if (this.currentStep === 2) {
-            this.intakeForm.primaryComplaint().touched();
+            this.intakeForm.primaryComplaint().markAsTouched();
         }
     }
 
+    // Submit form using Signal Forms submit function
     onSubmit() {
-        if (!this.intakeForm().invalid()) {
-            console.log('Patient Intake Form Submitted:', this.patient());
-            alert('Form Submitted! Check console for values.');
-        } else {
-            console.log('Form Invalid');
-        }
+        submit(this.intakeForm, async (form) => {
+            // Form is valid, process the submission
+            console.log('Patient Intake Form Submitted:', form().value());
+            alert('Form Submitted Successfully! Check console for values.');
+
+            return null; // No errors
+        });
     }
 }

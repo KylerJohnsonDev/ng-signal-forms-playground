@@ -1,14 +1,43 @@
 import { Component, ChangeDetectionStrategy, computed, signal } from '@angular/core';
-
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Combobox, ComboboxInput, ComboboxPopupContainer } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { ValidationErrorsComponent } from '../shared/validation-errors/validation-errors.component';
+
+// Custom validator for conditional required policy number
+function conditionalPolicyNumberValidator(control: AbstractControl): ValidationErrors | null {
+  const parent = control.parent;
+  if (!parent) {
+    return null;
+  }
+
+  const insuranceProvider = parent.get('insuranceProvider')?.value;
+  const policyNumber = control.value;
+
+  // If insurance provider is filled but policy number is empty, return error
+  if (insuranceProvider && insuranceProvider.trim() !== '' && (!policyNumber || policyNumber.trim() === '')) {
+    return {
+      conditionalRequired: true,
+      message: 'Policy Number is required when Insurance Provider is specified.'
+    };
+  }
+
+  return null;
+}
 
 @Component({
   selector: 'app-reactive-form',
-  imports: [ReactiveFormsModule, Combobox, ComboboxInput, ComboboxPopupContainer, Listbox, Option, OverlayModule],
+  imports: [
+    ReactiveFormsModule,
+    Combobox,
+    ComboboxInput,
+    ComboboxPopupContainer,
+    Listbox,
+    Option,
+    OverlayModule,
+    ValidationErrorsComponent
+  ],
   templateUrl: './reactive-form.component.html',
   styleUrls: ['./reactive-form.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,6 +48,9 @@ export class ReactiveFormComponent {
 
   // Signal to track date of birth
   dateOfBirth = signal<string>('');
+
+  // Signal to track insurance provider for conditional required indicator
+  insuranceProvider = signal<string>('');
 
   // Computed signal to calculate age
   calculatedAge = computed(() => {
@@ -80,13 +112,20 @@ export class ReactiveFormComponent {
 
       // Step 3
       insuranceProvider: [''],
-      policyNumber: [''],
+      policyNumber: ['', conditionalPolicyNumberValidator],
       consentToTreat: [false, Validators.requiredTrue]
     });
 
     // Subscribe to dateOfBirth valueChanges to sync with signal
     this.intakeForm.get('dateOfBirth')?.valueChanges.subscribe(value => {
       this.dateOfBirth.set(value || '');
+    });
+
+    // Subscribe to insuranceProvider changes to update policy number validation
+    this.intakeForm.get('insuranceProvider')?.valueChanges.subscribe(value => {
+      this.insuranceProvider.set(value || '');
+      // Trigger validation on policy number when insurance provider changes
+      this.intakeForm.get('policyNumber')?.updateValueAndValidity();
     });
   }
 
@@ -145,10 +184,67 @@ export class ReactiveFormComponent {
     }
   }
 
+  // Helper method to convert reactive form errors to signal form error format
+  getErrorsForField(fieldName: string): any[] {
+    const control = this.intakeForm.get(fieldName);
+    if (!control?.errors) {
+      return [];
+    }
+
+    const errors: any[] = [];
+    const validationErrors = control.errors;
+
+    for (const key in validationErrors) {
+      if (validationErrors.hasOwnProperty(key)) {
+        const error = validationErrors[key];
+
+        // If the error already has a message property, use it
+        if (error && typeof error === 'object' && 'message' in error) {
+          errors.push({ kind: key, message: error.message });
+        } else {
+          // Generate default messages based on error type
+          let message = '';
+          switch (key) {
+            case 'required':
+              message = `${this.getFieldLabel(fieldName)} is required.`;
+              break;
+            case 'minlength':
+              message = `${this.getFieldLabel(fieldName)} must be at least ${error.requiredLength} characters.`;
+              break;
+            case 'pattern':
+              message = 'Invalid format. Please use xxx-xxx-xxxx.';
+              break;
+            case 'conditionalRequired':
+              message = 'Policy Number is required when Insurance Provider is specified.';
+              break;
+            default:
+              message = `Invalid ${this.getFieldLabel(fieldName)}.`;
+          }
+          errors.push({ kind: key, message });
+        }
+      }
+    }
+
+    return errors;
+  }
+
+  // Helper to get user-friendly field labels
+  private getFieldLabel(fieldName: string): string {
+    const labels: Record<string, string> = {
+      'fullName': 'Full Name',
+      'dateOfBirth': 'Date of Birth',
+      'phoneNumber': 'Phone Number',
+      'primaryComplaint': 'Primary Complaint',
+      'policyNumber': 'Policy Number',
+      'consentToTreat': 'Consent'
+    };
+    return labels[fieldName] || fieldName;
+  }
+
   onSubmit() {
     if (this.intakeForm.valid) {
       console.log('Reactive Form Submitted:', this.intakeForm.value);
-      alert('Form Submitted! Check console for values.');
+      alert('Form Submitted Successfully! Check console for values.');
     } else {
       this.intakeForm.markAllAsTouched();
       console.log('Form Invalid');
