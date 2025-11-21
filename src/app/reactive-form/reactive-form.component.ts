@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer } from '@angular/aria/combobox';
+import { Combobox, ComboboxInput, ComboboxPopupContainer } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { OverlayModule } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-reactive-form',
-  imports: [CommonModule, ReactiveFormsModule, Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer, Listbox, Option, OverlayModule],
+  imports: [ReactiveFormsModule, Combobox, ComboboxInput, ComboboxPopupContainer, Listbox, Option, OverlayModule],
   templateUrl: './reactive-form.component.html',
   styleUrls: ['./reactive-form.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,

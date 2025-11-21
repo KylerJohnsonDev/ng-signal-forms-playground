@@ -12,123 +12,141 @@
   <form [formGroup]="intakeForm" (ngSubmit)="onSubmit()">
 
     <!-- Step 1: Personal Info -->
-    <div *ngIf="currentStep === 1" class="form-step">
-      <h3>Step 1: Personal Information</h3>
-
-      <div class="form-group">
-        <label for="fullName">Full Name</label>
-        <input id="fullName" type="text" formControlName="fullName" placeholder="Enter full name">
-        <div *ngIf="intakeForm.get('fullName')?.invalid && intakeForm.get('fullName')?.touched" class="error">
-          <span *ngIf="intakeForm.get('fullName')?.errors?.['required']">Full Name is required.</span>
-          <span *ngIf="intakeForm.get('fullName')?.errors?.['minlength']">Full Name must be at least 3
-            characters.</span>
+    @if (currentStep === 1) {
+      <div class="form-step">
+        <h3>Step 1: Personal Information</h3>
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" type="text" formControlName="fullName" placeholder="Enter full name">
+          @if (intakeForm.get('fullName')?.invalid && intakeForm.get('fullName')?.touched) {
+            <div class="error">
+              @if (intakeForm.get('fullName')?.errors?.['required']) {
+                <span>Full Name is required.</span>
+              }
+              @if (intakeForm.get('fullName')?.errors?.['minlength']) {
+                <span>Full Name must be at least 3
+                characters.</span>
+              }
+            </div>
+          }
         </div>
-      </div>
-
-      <div class="form-group">
-        <label for="dateOfBirth">Date of Birth</label>
-        <input id="dateOfBirth" type="date" formControlName="dateOfBirth">
-        <div *ngIf="intakeForm.get('dateOfBirth')?.invalid && intakeForm.get('dateOfBirth')?.touched" class="error">
-          Date of Birth is required.
+        <div class="form-group">
+          <label for="dateOfBirth">Date of Birth</label>
+          <input id="dateOfBirth" type="date" formControlName="dateOfBirth">
+          @if (intakeForm.get('dateOfBirth')?.invalid && intakeForm.get('dateOfBirth')?.touched) {
+            <div class="error">
+              Date of Birth is required.
+            </div>
+          }
         </div>
-      </div>
-
-      <div class="form-group">
-        <label>Gender</label>
-        <div ngCombobox #combobox="ngCombobox" readonly>
-          <div #origin class="select"
-            [class.invalid]="intakeForm.get('gender')?.invalid && intakeForm.get('gender')?.touched">
-            <span class="combobox-label">
-              <span class="selected-label-text">{{ genderDisplayValue }}</span>
-            </span>
-            <input aria-label="Gender" ngComboboxInput />
-            <span class="arrow">▼</span>
-          </div>
-          <ng-template ngComboboxPopupContainer>
-            <ng-template [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
-              [cdkConnectedOverlayOpen]="true">
-              <div class="popup-container">
-                <div ngListbox>
-                  @for (option of genderOptions; track option.value) {
-                  <div ngOption [value]="option.value" [label]="option.label" (click)="setGender(option.value)">
-                    <span class="option-text">{{option.label}}</span>
-                    <span class="check">✓</span>
+        <div class="form-group">
+          <label>Gender</label>
+          <div ngCombobox #combobox="ngCombobox" readonly>
+            <div #origin class="select"
+              [class.invalid]="intakeForm.get('gender')?.invalid && intakeForm.get('gender')?.touched">
+              <span class="combobox-label">
+                <span class="selected-label-text">{{ genderDisplayValue }}</span>
+              </span>
+              <input aria-label="Gender" ngComboboxInput />
+              <span class="arrow">▼</span>
+            </div>
+            <ng-template ngComboboxPopupContainer>
+              <ng-template [cdkConnectedOverlay]="{origin, usePopover: 'inline', matchWidth: true}"
+                [cdkConnectedOverlayOpen]="true">
+                <div class="popup-container">
+                  <div ngListbox>
+                    @for (option of genderOptions; track option.value) {
+                      <div ngOption [value]="option.value" [label]="option.label" (click)="setGender(option.value)">
+                        <span class="option-text">{{option.label}}</span>
+                        <span class="check">✓</span>
+                      </div>
+                    }
                   </div>
-                  }
                 </div>
-              </div>
+              </ng-template>
             </ng-template>
-          </ng-template>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="(555) 555-5555"/>
+          @if (intakeForm.get('phoneNumber')?.invalid && intakeForm.get('phoneNumber')?.touched) {
+            <div class="error">
+              @if (intakeForm.get('phoneNumber')?.errors?.['required']) {
+                <span>Phone Number is required.</span>
+              }
+              @if (intakeForm.get('phoneNumber')?.errors?.['pattern']) {
+                <span>Invalid phone number format
+                (xxx-xxx-xxxx).</span>
+              }
+            </div>
+          }
         </div>
       </div>
+    }
 
-      <div class="form-group">
-        <label for="phoneNumber">Phone Number</label>
-        <input id="phoneNumber" type="tel" formControlName="phoneNumber" placeholder="(555) 555-5555>
-        <div *ngIf=" intakeForm.get('phoneNumber')?.invalid && intakeForm.get('phoneNumber')?.touched" class="error">
-        <span *ngIf="intakeForm.get('phoneNumber')?.errors?.['required']">Phone Number is required.</span>
-        <span *ngIf="intakeForm.get('phoneNumber')?.errors?.['pattern']">Invalid phone number format
-          (xxx-xxx-xxxx).</span>
+    <!-- Step 2: Medical Info -->
+    @if (currentStep === 2) {
+      <div class="form-step">
+        <h3>Step 2: Medical Information</h3>
+        <div class="form-group">
+          <label for="primaryComplaint">Primary Complaint</label>
+          <textarea id="primaryComplaint" formControlName="primaryComplaint"
+          placeholder="Describe your primary complaint"></textarea>
+          @if (intakeForm.get('primaryComplaint')?.invalid && intakeForm.get('primaryComplaint')?.touched) {
+            <div
+              class="error">
+              Primary Complaint is required.
+            </div>
+          }
+        </div>
+        <div class="form-group">
+          <label for="allergies">Allergies</label>
+          <textarea id="allergies" formControlName="allergies" placeholder="List any allergies"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="medications">Current Medications</label>
+          <textarea id="medications" formControlName="medications" placeholder="List current medications"></textarea>
+        </div>
       </div>
+    }
+
+    <!-- Step 3: Insurance & Consent -->
+    @if (currentStep === 3) {
+      <div class="form-step">
+        <h3>Step 3: Insurance & Consent</h3>
+        <div class="form-group">
+          <label for="insuranceProvider">Insurance Provider</label>
+          <input id="insuranceProvider" type="text" formControlName="insuranceProvider"
+            placeholder="Enter insurance provider">
+        </div>
+        <div class="form-group">
+          <label for="policyNumber">Policy Number</label>
+          <input id="policyNumber" type="text" formControlName="policyNumber" placeholder="Enter policy number">
+        </div>
+        <div class="form-group checkbox-group">
+          <label>
+            <input type="checkbox" formControlName="consentToTreat"> I consent to treatment
+          </label>
+          @if (intakeForm.get('consentToTreat')?.invalid && intakeForm.get('consentToTreat')?.touched) {
+            <div class="error">
+              Consent is required.
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Navigation Buttons -->
+    <div class="actions">
+      <button type="button" (click)="prevStep()" [disabled]="currentStep === 1" class="btn-secondary">Previous</button>
+      @if (currentStep < 3) {
+        <button type="button" (click)="nextStep()" class="btn-primary">Next</button>
+      }
+      @if (currentStep === 3) {
+        <button type="submit" class="btn-success">Submit</button>
+      }
     </div>
-</div>
 
-<!-- Step 2: Medical Info -->
-<div *ngIf="currentStep === 2" class="form-step">
-  <h3>Step 2: Medical Information</h3>
-
-  <div class="form-group">
-    <label for="primaryComplaint">Primary Complaint</label>
-    <textarea id="primaryComplaint" formControlName="primaryComplaint"
-      placeholder="Describe your primary complaint"></textarea>
-    <div *ngIf="intakeForm.get('primaryComplaint')?.invalid && intakeForm.get('primaryComplaint')?.touched"
-      class="error">
-      Primary Complaint is required.
-    </div>
-  </div>
-
-  <div class="form-group">
-    <label for="allergies">Allergies</label>
-    <textarea id="allergies" formControlName="allergies" placeholder="List any allergies"></textarea>
-  </div>
-
-  <div class="form-group">
-    <label for="medications">Current Medications</label>
-    <textarea id="medications" formControlName="medications" placeholder="List current medications"></textarea>
-  </div>
-</div>
-
-<!-- Step 3: Insurance & Consent -->
-<div *ngIf="currentStep === 3" class="form-step">
-  <h3>Step 3: Insurance & Consent</h3>
-
-  <div class="form-group">
-    <label for="insuranceProvider">Insurance Provider</label>
-    <input id="insuranceProvider" type="text" formControlName="insuranceProvider"
-      placeholder="Enter insurance provider">
-  </div>
-
-  <div class="form-group">
-    <label for="policyNumber">Policy Number</label>
-    <input id="policyNumber" type="text" formControlName="policyNumber" placeholder="Enter policy number">
-  </div>
-
-  <div class="form-group checkbox-group">
-    <label>
-      <input type="checkbox" formControlName="consentToTreat"> I consent to treatment
-    </label>
-    <div *ngIf="intakeForm.get('consentToTreat')?.invalid && intakeForm.get('consentToTreat')?.touched" class="error">
-      Consent is required.
-    </div>
-  </div>
-</div>
-
-<!-- Navigation Buttons -->
-<div class="actions">
-  <button type="button" (click)="prevStep()" [disabled]="currentStep === 1" class="btn-secondary">Previous</button>
-  <button type="button" (click)="nextStep()" *ngIf="currentStep < 3" class="btn-primary">Next</button>
-  <button type="submit" *ngIf="currentStep === 3" class="btn-success">Submit</button>
-</div>
-
-</form>
+  </form>
 </div>

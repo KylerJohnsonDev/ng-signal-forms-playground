@@ -1,5 +1,5 @@
 import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { form, schema, required, pattern, minLength, Field } from '@angular/forms/signals';
 import { Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
@@ -22,7 +22,7 @@ export interface PatientIntake {
 
 @Component({
     selector: 'app-signal-form',
-    imports: [CommonModule, Field, Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer, Listbox, Option, OverlayModule],
+    imports: [Field, Combobox, ComboboxInput, ComboboxPopupContainer, Listbox, Option, OverlayModule],
     templateUrl: './signal-form.component.html',
     styleUrls: ['./signal-form.component.css'],
     changeDetection: ChangeDetectionStrategy.OnPush,
