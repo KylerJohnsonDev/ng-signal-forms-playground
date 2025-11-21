@@ -20,7 +20,7 @@ export class ReactiveFormComponent {
   constructor(private fb: FormBuilder) {
     this.intakeForm = this.fb.group({
       // Step 1
-      fullName: ['', Validators.required],
+      fullName: ['', [Validators.required, Validators.minLength(3)]],
       dateOfBirth: ['', Validators.required],
       gender: [''],
       phoneNumber: ['', [Validators.required, Validators.pattern(/^\d{3}-\d{3}-\d{4}$/)]],

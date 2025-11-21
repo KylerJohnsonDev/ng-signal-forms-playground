@@ -1,6 +1,6 @@
 import { Component, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { form, schema, required, pattern, Field } from '@angular/forms/signals';
+import { form, schema, required, pattern, minLength, Field } from '@angular/forms/signals';
 import { Combobox, ComboboxInput, ComboboxPopup, ComboboxPopupContainer } from '@angular/aria/combobox';
 import { Listbox, Option } from '@angular/aria/listbox';
 import { OverlayModule } from '@angular/cdk/overlay';
@@ -45,6 +45,7 @@ export class SignalFormComponent {
     // 2. Define Validation Schema
     patientSchema = schema((patient: any) => {
         required(patient.fullName);
+        minLength(patient.fullName, 3);
         required(patient.dateOfBirth);
         required(patient.phoneNumber);
         pattern(patient.phoneNumber, /^\d{3}-\d{3}-\d{4}$/, { message: 'Invalid phone number format (xxx-xxx-xxxx)' });

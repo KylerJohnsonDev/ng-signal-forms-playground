@@ -19,10 +19,15 @@
             <div class="form-group">
                 <label for="fullName">Full Name *</label>
                 <input id="fullName" type="text" [field]="intakeForm.fullName" placeholder="Enter full name">
-                @if (intakeForm.fullName().invalid()) {
+                @if (intakeForm.fullName().invalid() && intakeForm.fullName().dirty()) {
                 <div class="error">
                     @for (error of intakeForm.fullName().errors(); track error) {
-                    {{ error.message }}
+                    @if (error.kind === 'required') {
+                    <span>Full Name is required.</span>
+                    }
+                    @if (error.kind === 'minLength') {
+                    <span>Full Name must be at least 3 characters.</span>
+                    }
                     }
                 </div>
                 }
