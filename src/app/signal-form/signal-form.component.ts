@@ -38,7 +38,6 @@ export interface PatientIntake {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SignalFormComponent {
-    // 1. Define the model signal
     patient = signal<PatientIntake>({
         fullName: '',
         dateOfBirth: '',
@@ -52,7 +51,6 @@ export class SignalFormComponent {
         consentToTreat: false
     });
 
-    // 2. Create the form with the extracted schema
     intakeForm = form(this.patient, patientIntakeSchema);
 
     // Gender dropdown options
