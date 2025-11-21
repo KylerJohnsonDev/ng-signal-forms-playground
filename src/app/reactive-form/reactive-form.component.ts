@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -29,18 +29,32 @@ export class ReactiveFormComponent {
     const birthDate = new Date(dob);
     const today = new Date();
 
-    // If birth year is the same as current year, show age in months
-    if (birthDate.getFullYear() === today.getFullYear()) {
-      let months = today.getMonth() - birthDate.getMonth();
-      if (today.getDate() < birthDate.getDate()) {
-        months--;
-      }
-      // Ensure months is not negative
-      months = Math.max(0, months);
-      return `${months} ${months === 1 ? 'month' : 'months'}`;
+    // Calculate total months
+    let totalMonths = (today.getFullYear() - birthDate.getFullYear()) * 12 + (today.getMonth() - birthDate.getMonth());
+
+    // Calculate days difference
+    let days = today.getDate() - birthDate.getDate();
+    if (days < 0) {
+      totalMonths--;
+      const previousMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+      days += previousMonth.getDate();
     }
 
-    // Otherwise, show age in years
+    // Less than 1 month: show in days
+    if (totalMonths === 0) {
+      const totalDays = Math.floor((today.getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24));
+      return `${totalDays} ${totalDays === 1 ? 'day' : 'days'}`;
+    }
+
+    // Less than 1 year: show in months and days
+    if (totalMonths < 12) {
+      if (days === 0) {
+        return `${totalMonths} ${totalMonths === 1 ? 'month' : 'months'}`;
+      }
+      return `${totalMonths} ${totalMonths === 1 ? 'month' : 'months'}, ${days} ${days === 1 ? 'day' : 'days'}`;
+    }
+
+    // 1 year or older: show age in years
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
 
@@ -70,11 +84,9 @@ export class ReactiveFormComponent {
       consentToTreat: [false, Validators.requiredTrue]
     });
 
-    // Effect to sync dateOfBirth signal with form control
-    effect(() => {
-      this.intakeForm.get('dateOfBirth')?.valueChanges.subscribe(value => {
-        this.dateOfBirth.set(value || '');
-      });
+    // Subscribe to dateOfBirth valueChanges to sync with signal
+    this.intakeForm.get('dateOfBirth')?.valueChanges.subscribe(value => {
+      this.dateOfBirth.set(value || '');
     });
   }
 
